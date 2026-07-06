@@ -1,0 +1,127 @@
+.whatsapp {
+  position: fixed;
+  right: 26px;
+  bottom: 26px;
+  z-index: 120;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  padding: 8px 18px 8px 8px;
+  background: #25d366;
+  color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 18px 42px rgba(5, 4, 63, 0.22);
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.whatsapp:hover {
+  background: #1fbd59;
+  transform: translateY(-4px);
+  box-shadow: 0 22px 52px rgba(5, 4, 63, 0.3);
+}
+
+.iconBox {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  align-items: center;
+  justify-content: center;
+  background: #128c4a;
+}
+
+.iconBox img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.text {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 2px;
+  line-height: 1;
+}
+
+.text small {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.text strong {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pulse {
+  position: absolute;
+  inset: -5px;
+  z-index: 1;
+  border: 1px solid rgba(37, 211, 102, 0.45);
+  opacity: 0;
+  animation: whatsappPulse 2.4s ease-out infinite;
+}
+
+@keyframes whatsappPulse {
+  0% {
+    opacity: 0.65;
+    transform: scale(0.94);
+  }
+
+  70% {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+  .whatsapp {
+    right: 18px;
+    bottom: 18px;
+    min-height: 54px;
+    padding: 7px;
+  }
+
+  .iconBox {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .text {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+    display: none;
+  }
+
+  .whatsapp {
+    transition: none;
+  }
+}
