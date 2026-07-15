@@ -107,10 +107,10 @@ export default function GaleriaServicios() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setHeadingVisible(true);
-          observer.unobserve(heading);
-        }
+        if (!entry.isIntersecting) return;
+
+        setHeadingVisible(true);
+        observer.unobserve(heading);
       },
       {
         threshold: 0.25,
@@ -180,13 +180,18 @@ export default function GaleriaServicios() {
       }
     };
 
-    const previousOverflow = document.body.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
 
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [activeIndex]);
@@ -209,7 +214,7 @@ export default function GaleriaServicios() {
     );
   };
 
-  const stopPropagation = (event: MouseEvent<HTMLDivElement>) => {
+  const stopPropagation = (event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
   };
 
@@ -272,7 +277,6 @@ export default function GaleriaServicios() {
                   />
 
                   <span className={styles.imageShade} aria-hidden="true" />
-
                   <span className={styles.topLine} aria-hidden="true" />
 
                   <span className={styles.number}>
@@ -302,23 +306,29 @@ export default function GaleriaServicios() {
           aria-label="Galería ampliada de Transportes Iquique"
           onClick={closeLightbox}
         >
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={(event) => {
+              event.stopPropagation();
+              closeLightbox();
+            }}
+            aria-label="Cerrar galería"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+
           <div
             className={styles.lightboxPanel}
             onClick={stopPropagation}
           >
             <button
               type="button"
-              className={styles.closeButton}
-              onClick={closeLightbox}
-              aria-label="Cerrar galería"
-            >
-              <span aria-hidden="true">×</span>
-            </button>
-
-            <button
-              type="button"
               className={`${styles.navigationButton} ${styles.previousButton}`}
-              onClick={showPrevious}
+              onClick={(event) => {
+                event.stopPropagation();
+                showPrevious();
+              }}
               aria-label="Ver imagen anterior"
             >
               <span aria-hidden="true">‹</span>
@@ -336,7 +346,10 @@ export default function GaleriaServicios() {
             <button
               type="button"
               className={`${styles.navigationButton} ${styles.nextButton}`}
-              onClick={showNext}
+              onClick={(event) => {
+                event.stopPropagation();
+                showNext();
+              }}
               aria-label="Ver imagen siguiente"
             >
               <span aria-hidden="true">›</span>
@@ -355,7 +368,7 @@ export default function GaleriaServicios() {
               </div>
 
               <span className={styles.keyboardHelp}>
-                Use las flechas para navegar
+                Usa las flechas para navegar
               </span>
             </div>
           </div>

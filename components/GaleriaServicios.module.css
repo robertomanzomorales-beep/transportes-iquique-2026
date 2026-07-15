@@ -78,15 +78,17 @@
 
 .grid {
   width: 100%;
+
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
 }
 
-/* IMÁGENES */
+/* TARJETAS */
 
 .card {
   position: relative;
+
   width: 100%;
   aspect-ratio: 16 / 11;
   padding: 0;
@@ -95,6 +97,7 @@
   appearance: none;
   border: 0;
   border-radius: 0;
+
   background: #0c0e35;
   text-align: left;
   cursor: pointer;
@@ -117,6 +120,7 @@
 .image {
   width: 100%;
   height: 100%;
+
   display: block;
 
   object-fit: cover;
@@ -132,13 +136,12 @@
   inset: 0;
   z-index: 1;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(7, 9, 35, 0.04) 0%,
-      rgba(7, 9, 35, 0.08) 38%,
-      rgba(7, 9, 35, 0.78) 100%
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(7, 9, 35, 0.04) 0%,
+    rgba(7, 9, 35, 0.08) 38%,
+    rgba(7, 9, 35, 0.78) 100%
+  );
 
   transition:
     opacity 0.45s ease,
@@ -153,10 +156,12 @@
   z-index: 3;
 
   height: 4px;
+
   background: #fdbb13;
 
   transform: scaleX(0);
   transform-origin: left;
+
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -183,6 +188,7 @@
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0.17em;
+
   color: #ffffff;
 
   transition:
@@ -204,6 +210,7 @@
   gap: 9px;
 
   transform: translateY(18px);
+
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -245,6 +252,7 @@
 .viewLine {
   width: 24px;
   height: 1px;
+
   background: currentColor;
 
   transition: width 0.35s ease;
@@ -265,13 +273,12 @@
 
 .card:hover .imageShade,
 .card:focus-visible .imageShade {
-  background:
-    linear-gradient(
-      180deg,
-      rgba(7, 9, 35, 0.14) 0%,
-      rgba(7, 9, 35, 0.24) 38%,
-      rgba(7, 9, 35, 0.9) 100%
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(7, 9, 35, 0.14) 0%,
+    rgba(7, 9, 35, 0.24) 38%,
+    rgba(7, 9, 35, 0.9) 100%
+  );
 }
 
 .card:hover .topLine,
@@ -282,6 +289,7 @@
 .card:hover .number,
 .card:focus-visible .number {
   transform: translateY(-3px);
+
   border-color: rgba(255, 255, 255, 0.5);
   background: rgba(23, 25, 119, 0.78);
 }
@@ -312,35 +320,117 @@
 .lightbox {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+
+  /*
+   * Queda por encima del header, menú, WhatsApp
+   * y cualquier contexto de apilamiento del sitio.
+   */
+  z-index: 2147483646;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 28px;
+  padding:
+    max(28px, env(safe-area-inset-top))
+    max(28px, env(safe-area-inset-right))
+    max(28px, env(safe-area-inset-bottom))
+    max(28px, env(safe-area-inset-left));
 
-  background: rgba(4, 6, 25, 0.94);
+  overflow: hidden;
+
+  background: rgba(4, 6, 25, 0.96);
   backdrop-filter: blur(12px);
 
   animation: lightboxBackdrop 0.3s ease both;
 }
 
+/*
+ * La X ya no depende del panel ni de la imagen.
+ * Siempre queda fijada en la pantalla.
+ */
+.closeButton {
+  position: fixed;
+
+  top: max(18px, env(safe-area-inset-top));
+  right: max(18px, env(safe-area-inset-right));
+
+  z-index: 2147483647;
+
+  width: 52px;
+  height: 52px;
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 0;
+
+  background: rgba(8, 10, 37, 0.92);
+  color: #ffffff;
+
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2.1rem;
+  font-weight: 300;
+  line-height: 1;
+
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(10px);
+
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.closeButton span {
+  display: block;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.closeButton:hover,
+.closeButton:focus-visible {
+  border-color: #fdbb13;
+  background: #fdbb13;
+  color: #080a2f;
+  transform: translateY(-2px);
+}
+
+.closeButton:focus-visible {
+  outline: 3px solid rgba(253, 187, 19, 0.35);
+  outline-offset: 4px;
+}
+
 .lightboxPanel {
   position: relative;
+  z-index: 2;
 
   width: min(1400px, 100%);
-  height: min(900px, calc(100vh - 56px));
+  height: min(900px, calc(100dvh - 56px));
 
   display: grid;
   grid-template-columns: 66px minmax(0, 1fr) 66px;
   grid-template-rows: minmax(0, 1fr) auto;
   align-items: center;
 
+  pointer-events: auto;
+
   animation: lightboxPanel 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .lightboxMedia {
+  position: relative;
+  z-index: 1;
+
   grid-column: 2;
   grid-row: 1;
 
@@ -356,42 +446,56 @@
 }
 
 .lightboxImage {
+  position: relative;
+  z-index: 1;
+
   max-width: 100%;
   max-height: 100%;
 
   display: block;
+
   object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 
   animation: imageReveal 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.navigationButton,
-.closeButton {
-  appearance: none;
-  border: 1px solid rgba(255, 255, 255, 0.17);
-  background: rgba(255, 255, 255, 0.07);
-  color: #ffffff;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    transform 0.3s ease;
-}
-
 .navigationButton {
+  position: relative;
+  z-index: 4;
+
   width: 52px;
   height: 52px;
+  padding: 0;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  font-family: Arial, sans-serif;
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 0;
+
+  background: rgba(8, 10, 37, 0.78);
+  color: #ffffff;
+
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 2.1rem;
   font-weight: 300;
   line-height: 1;
+
+  backdrop-filter: blur(8px);
+
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .previousButton {
@@ -406,41 +510,23 @@
   justify-self: end;
 }
 
-.closeButton {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 4;
-
-  width: 48px;
-  height: 48px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  font-family: Arial, sans-serif;
-  font-size: 2rem;
-  font-weight: 300;
-  line-height: 1;
-}
-
 .navigationButton:hover,
-.navigationButton:focus-visible,
-.closeButton:hover,
-.closeButton:focus-visible {
-  border-color: rgba(255, 255, 255, 0.42);
-  background: rgba(255, 255, 255, 0.14);
+.navigationButton:focus-visible {
+  border-color: #fdbb13;
+  background: #fdbb13;
+  color: #080a2f;
   transform: translateY(-3px);
 }
 
-.navigationButton:focus-visible,
-.closeButton:focus-visible {
-  outline: 2px solid #fdbb13;
+.navigationButton:focus-visible {
+  outline: 3px solid rgba(253, 187, 19, 0.35);
   outline-offset: 3px;
 }
 
 .lightboxFooter {
+  position: relative;
+  z-index: 3;
+
   grid-column: 2;
   grid-row: 2;
 
@@ -451,6 +537,7 @@
 
   padding-top: 18px;
   margin-top: 16px;
+
   border-top: 1px solid rgba(255, 255, 255, 0.16);
 }
 
@@ -546,8 +633,10 @@
 
   .heading {
     width: min(100% - 48px, 1240px);
+
     grid-template-columns: 1fr;
     gap: 24px;
+
     margin-bottom: 36px;
   }
 
@@ -566,7 +655,15 @@
   .navigationButton {
     width: 44px;
     height: 44px;
+
     font-size: 1.8rem;
+  }
+
+  .closeButton {
+    width: 48px;
+    height: 48px;
+
+    font-size: 1.9rem;
   }
 }
 
@@ -644,18 +741,33 @@
   .viewText {
     opacity: 1;
     transform: none;
+
     font-size: 0.55rem;
   }
 
   .lightbox {
-    padding: 14px;
+    padding:
+      max(12px, env(safe-area-inset-top))
+      max(12px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+  }
+
+  .closeButton {
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+
+    width: 46px;
+    height: 46px;
+
+    font-size: 1.85rem;
   }
 
   .lightboxPanel {
     width: 100%;
-    height: calc(100vh - 28px);
+    height: calc(100dvh - 24px);
 
-    grid-template-columns: 46px minmax(0, 1fr) 46px;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
     grid-template-rows: minmax(0, 1fr) auto;
   }
 
@@ -664,13 +776,6 @@
     height: 40px;
 
     font-size: 1.6rem;
-  }
-
-  .closeButton {
-    width: 42px;
-    height: 42px;
-
-    font-size: 1.7rem;
   }
 
   .lightboxFooter {
