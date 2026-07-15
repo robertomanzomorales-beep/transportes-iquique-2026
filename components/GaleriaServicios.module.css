@@ -320,11 +320,6 @@
 .lightbox {
   position: fixed;
   inset: 0;
-
-  /*
-   * Queda por encima del header, menú, WhatsApp
-   * y cualquier contexto de apilamiento del sitio.
-   */
   z-index: 2147483646;
 
   display: flex;
@@ -345,10 +340,6 @@
   animation: lightboxBackdrop 0.3s ease both;
 }
 
-/*
- * La X ya no depende del panel ni de la imagen.
- * Siempre queda fijada en la pantalla.
- */
 .closeButton {
   position: fixed;
 
@@ -730,19 +721,44 @@
 
   .cardContent {
     right: 16px;
-    bottom: 16px;
+    bottom: 22px;
     left: 16px;
+
+    gap: 7px;
+
+    transform: none;
+  }
+
+  .card:hover .cardContent,
+  .card:focus-visible .cardContent {
+    transform: none;
   }
 
   .cardContent strong {
+    max-width: calc(100% - 10px);
+
     font-size: 1rem;
+    line-height: 1.12;
   }
 
   .viewText {
     opacity: 1;
     transform: none;
 
+    padding-bottom: 3px;
+
     font-size: 0.55rem;
+    line-height: 1.25;
+  }
+
+  .card:hover .viewText,
+  .card:focus-visible .viewText {
+    opacity: 1;
+    transform: none;
+  }
+
+  .viewLine {
+    flex-shrink: 0;
   }
 
   .lightbox {
