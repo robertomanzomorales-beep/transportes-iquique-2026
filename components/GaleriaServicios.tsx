@@ -7,6 +7,7 @@ import {
   type CSSProperties,
   type MouseEvent,
 } from "react";
+import { createPortal } from "react-dom";
 import styles from "./GaleriaServicios.module.css";
 
 const images = [
@@ -96,9 +97,14 @@ export default function GaleriaServicios() {
   const headingRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
+  const [mounted, setMounted] = useState(false);
   const [headingVisible, setHeadingVisible] = useState(false);
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const heading = headingRef.current;
@@ -160,6 +166,29 @@ export default function GaleriaServicios() {
   useEffect(() => {
     if (activeIndex === null) return;
 
+    const scrollPosition = window.scrollY;
+
+    const previousBodyStyles = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      left: document.body.style.left,
+      right: document.body.style.right,
+      width: document.body.style.width,
+      overflow: document.body.style.overflow,
+    };
+
+    const previousHtmlOverflow =
+      document.documentElement.style.overflow;
+
+    document.documentElement.style.overflow = "hidden";
+
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollPosition}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setActiveIndex(null);
@@ -180,19 +209,24 @@ export default function GaleriaServicios() {
       }
     };
 
-    const previousBodyOverflow = document.body.style.overflow;
-    const previousHtmlOverflow = document.documentElement.style.overflow;
-
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
-
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousBodyOverflow;
-      document.documentElement.style.overflow = previousHtmlOverflow;
-
       window.removeEventListener("keydown", handleKeyDown);
+
+      document.documentElement.style.overflow =
+        previousHtmlOverflow;
+
+      document.body.style.position =
+        previousBodyStyles.position;
+      document.body.style.top = previousBodyStyles.top;
+      document.body.style.left = previousBodyStyles.left;
+      document.body.style.right = previousBodyStyles.right;
+      document.body.style.width = previousBodyStyles.width;
+      document.body.style.overflow =
+        previousBodyStyles.overflow;
+
+      window.scrollTo(0, scrollPosition);
     };
   }, [activeIndex]);
 
@@ -214,9 +248,92 @@ export default function GaleriaServicios() {
     );
   };
 
-  const stopPropagation = (event: MouseEvent<HTMLElement>) => {
+  const stopPropagation = (
+    event: MouseEvent<HTMLElement>
+  ) => {
     event.stopPropagation();
   };
+
+  const lightbox =
+    mounted && activeIndex !== null
+      ? createPortal(
+          <div
+            className={styles.lightbox}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Galería ampliada de Transportes Iquique"
+            onClick={closeLightbox}
+          >
+            <button
+              type="button"
+              className={styles.closeButton}
+              onClick={(event) => {
+                event.stopPropagation();
+                closeLightbox();
+              }}
+              aria-label="Cerrar galería"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+
+            <div
+              className={styles.lightboxPanel}
+              onClick={stopPropagation}
+            >
+              <button
+                type="button"
+                className={`${styles.navigationButton} ${styles.previousButton}`}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  showPrevious();
+                }}
+                aria-label="Ver imagen anterior"
+              >
+                <span aria-hidden="true">‹</span>
+              </button>
+
+              <div className={styles.lightboxMedia}>
+                <img
+                  key={images[activeIndex].src}
+                  src={images[activeIndex].src}
+                  alt={images[activeIndex].alt}
+                  className={styles.lightboxImage}
+                />
+              </div>
+
+              <button
+                type="button"
+                className={`${styles.navigationButton} ${styles.nextButton}`}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  showNext();
+                }}
+                aria-label="Ver imagen siguiente"
+              >
+                <span aria-hidden="true">›</span>
+              </button>
+
+              <div className={styles.lightboxFooter}>
+                <div>
+                  <span className={styles.lightboxCounter}>
+                    {String(activeIndex + 1).padStart(2, "0")} /{" "}
+                    {String(images.length).padStart(2, "0")}
+                  </span>
+
+                  <strong className={styles.lightboxTitle}>
+                    {images[activeIndex].title}
+                  </strong>
+                </div>
+
+                <span className={styles.keyboardHelp}>
+                  Usa las flechas para navegar
+                </span>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )
+      : null;
 
   return (
     <>
@@ -231,16 +348,22 @@ export default function GaleriaServicios() {
           }`}
         >
           <div className={styles.headingMain}>
-            <span className={styles.eyebrow}>Galería operativa</span>
+            <span className={styles.eyebrow}>
+              Galería operativa
+            </span>
 
-            <h2 id="galeria-servicios-title" className={styles.title}>
+            <h2
+              id="galeria-servicios-title"
+              className={styles.title}
+            >
               Equipos y operaciones en terreno
             </h2>
           </div>
 
           <p className={styles.intro}>
-            Una muestra de nuestros traslados, equipos y operaciones de apoyo
-            logístico desarrolladas para empresas de la zona norte y del país.
+            Una muestra de nuestros traslados, equipos y
+            operaciones de apoyo logístico desarrolladas para
+            empresas de la zona norte y del país.
           </p>
         </div>
 
@@ -276,8 +399,15 @@ export default function GaleriaServicios() {
                     decoding="async"
                   />
 
-                  <span className={styles.imageShade} aria-hidden="true" />
-                  <span className={styles.topLine} aria-hidden="true" />
+                  <span
+                    className={styles.imageShade}
+                    aria-hidden="true"
+                  />
+
+                  <span
+                    className={styles.topLine}
+                    aria-hidden="true"
+                  />
 
                   <span className={styles.number}>
                     {String(index + 1).padStart(2, "0")}
@@ -288,7 +418,11 @@ export default function GaleriaServicios() {
 
                     <span className={styles.viewText}>
                       Ampliar imagen
-                      <span className={styles.viewLine} aria-hidden="true" />
+
+                      <span
+                        className={styles.viewLine}
+                        aria-hidden="true"
+                      />
                     </span>
                   </span>
                 </button>
@@ -298,82 +432,7 @@ export default function GaleriaServicios() {
         </div>
       </section>
 
-      {activeIndex !== null && (
-        <div
-          className={styles.lightbox}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Galería ampliada de Transportes Iquique"
-          onClick={closeLightbox}
-        >
-          <button
-            type="button"
-            className={styles.closeButton}
-            onClick={(event) => {
-              event.stopPropagation();
-              closeLightbox();
-            }}
-            aria-label="Cerrar galería"
-          >
-            <span aria-hidden="true">×</span>
-          </button>
-
-          <div
-            className={styles.lightboxPanel}
-            onClick={stopPropagation}
-          >
-            <button
-              type="button"
-              className={`${styles.navigationButton} ${styles.previousButton}`}
-              onClick={(event) => {
-                event.stopPropagation();
-                showPrevious();
-              }}
-              aria-label="Ver imagen anterior"
-            >
-              <span aria-hidden="true">‹</span>
-            </button>
-
-            <div className={styles.lightboxMedia}>
-              <img
-                key={images[activeIndex].src}
-                src={images[activeIndex].src}
-                alt={images[activeIndex].alt}
-                className={styles.lightboxImage}
-              />
-            </div>
-
-            <button
-              type="button"
-              className={`${styles.navigationButton} ${styles.nextButton}`}
-              onClick={(event) => {
-                event.stopPropagation();
-                showNext();
-              }}
-              aria-label="Ver imagen siguiente"
-            >
-              <span aria-hidden="true">›</span>
-            </button>
-
-            <div className={styles.lightboxFooter}>
-              <div>
-                <span className={styles.lightboxCounter}>
-                  {String(activeIndex + 1).padStart(2, "0")} /{" "}
-                  {String(images.length).padStart(2, "0")}
-                </span>
-
-                <strong className={styles.lightboxTitle}>
-                  {images[activeIndex].title}
-                </strong>
-              </div>
-
-              <span className={styles.keyboardHelp}>
-                Usa las flechas para navegar
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
+      {lightbox}
     </>
   );
 }
