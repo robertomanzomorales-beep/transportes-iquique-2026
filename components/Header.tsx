@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type MouseEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+} from "react";
 import styles from "./Header.module.css";
 
 const navigationItems = [
@@ -18,6 +23,7 @@ const navigationItems = [
 
 export default function Header() {
   const pathname = usePathname();
+  const headerRef = useRef<HTMLElement | null>(null);
 
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -69,6 +75,8 @@ export default function Header() {
 
     if (open) {
       document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
 
     return () => {
@@ -85,39 +93,69 @@ export default function Header() {
     window.location.assign("/");
   };
 
+  const scrollToAboutSection = () => {
+    const section = document.getElementById("quienes-somos");
+
+    if (!section) return;
+
+    const headerHeight =
+      headerRef.current?.getBoundingClientRect().height ?? 68;
+
+    const sectionTop =
+      section.getBoundingClientRect().top +
+      window.scrollY -
+      headerHeight;
+
+    window.scrollTo({
+      top: Math.max(0, sectionTop),
+      behavior: "smooth",
+    });
+
+    window.history.replaceState(
+      null,
+      "",
+      "/#quienes-somos"
+    );
+  };
+
   const handleAboutClick = (
     event: MouseEvent<HTMLAnchorElement>
   ) => {
-    closeMenu();
+    if (pathname !== "/") {
+      closeMenu();
+      window.location.assign("/#quienes-somos");
+      return;
+    }
 
-    if (pathname === "/") {
-      event.preventDefault();
+    event.preventDefault();
 
-      const section = document.getElementById("quienes-somos");
+    const isMobile = window.innerWidth <= 900;
+    const menuWasOpen = open;
 
-      if (section) {
-        section.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+    setOpen(false);
 
-        window.history.replaceState(
-          null,
-          "",
-          "/#quienes-somos"
-        );
-      }
+    /*
+     * En móvil esperamos a que el panel termine de cerrarse.
+     * Así el cambio de altura no altera la posición final.
+     */
+    if (isMobile && menuWasOpen) {
+      window.setTimeout(() => {
+        scrollToAboutSection();
+      }, 540);
 
       return;
     }
 
-    window.location.assign("/#quienes-somos");
+    window.requestAnimationFrame(() => {
+      scrollToAboutSection();
+    });
   };
 
   const isActive = (href: string) => pathname === href;
 
   return (
     <header
+      ref={headerRef}
       className={`${styles.header} ${
         scrolled ? styles.scrolled : ""
       }`}
@@ -138,7 +176,10 @@ export default function Header() {
           />
         </a>
 
-        <nav className={styles.nav} aria-label="Menú principal">
+        <nav
+          className={styles.nav}
+          aria-label="Menú principal"
+        >
           <a
             href="/"
             onClick={(event) => {
@@ -148,7 +189,9 @@ export default function Header() {
             className={`${styles.navLink} ${
               pathname === "/" ? styles.currentLink : ""
             }`}
-            aria-current={pathname === "/" ? "page" : undefined}
+            aria-current={
+              pathname === "/" ? "page" : undefined
+            }
           >
             Inicio
           </a>
@@ -167,7 +210,9 @@ export default function Header() {
               href={item.href}
               onClick={closeMenu}
               className={`${styles.navLink} ${
-                isActive(item.href) ? styles.currentLink : ""
+                isActive(item.href)
+                  ? styles.currentLink
+                  : ""
               }`}
               aria-current={
                 isActive(item.href) ? "page" : undefined
@@ -201,7 +246,9 @@ export default function Header() {
             className={`${styles.menuButton} ${
               open ? styles.menuOpen : ""
             }`}
-            onClick={() => setOpen((current) => !current)}
+            onClick={() => {
+              setOpen((current) => !current);
+            }}
             aria-label={
               open
                 ? "Cerrar menú principal"
@@ -222,8 +269,12 @@ export default function Header() {
         className={`${styles.mobilePanel} ${
           open ? styles.mobileOpen : ""
         }`}
+        aria-hidden={!open}
       >
-        <nav className={styles.mobileNav} aria-label="Menú móvil">
+        <nav
+          className={styles.mobileNav}
+          aria-label="Menú móvil"
+        >
           <a
             href="/"
             onClick={(event) => {
@@ -231,9 +282,13 @@ export default function Header() {
               handleHomeClick();
             }}
             className={`${styles.mobileLink} ${
-              pathname === "/" ? styles.mobileCurrent : ""
+              pathname === "/"
+                ? styles.mobileCurrent
+                : ""
             }`}
-            aria-current={pathname === "/" ? "page" : undefined}
+            aria-current={
+              pathname === "/" ? "page" : undefined
+            }
           >
             <span>Inicio</span>
             <i aria-hidden="true">01</i>
@@ -257,7 +312,9 @@ export default function Header() {
                 : ""
             }`}
             aria-current={
-              pathname === "/servicios" ? "page" : undefined
+              pathname === "/servicios"
+                ? "page"
+                : undefined
             }
           >
             <span>Servicios</span>
@@ -273,7 +330,9 @@ export default function Header() {
                 : ""
             }`}
             aria-current={
-              pathname === "/contacto" ? "page" : undefined
+              pathname === "/contacto"
+                ? "page"
+                : undefined
             }
           >
             <span>Contacto</span>

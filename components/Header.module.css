@@ -1,7 +1,7 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 80;
+  z-index: 999;
 
   width: 100%;
 
@@ -214,6 +214,7 @@
   background: #05043f;
 
   transform: translateX(-102%);
+
   transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -480,6 +481,7 @@
   background: #05043f;
 
   transform: translateX(-102%);
+
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
