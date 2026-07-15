@@ -52,7 +52,7 @@ export default function Footer() {
 
             <p>Conversemos sobre tu próximo transporte.</p>
 
-            <Link href="#contacto" className={styles.button}>
+            <Link href="/contacto" className={styles.button}>
               Solicitar cotización
             </Link>
           </div>

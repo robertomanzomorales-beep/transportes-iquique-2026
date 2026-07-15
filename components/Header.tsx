@@ -1,12 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import {
+  useEffect,
+  useState,
+  type MouseEvent,
+} from "react";
 import styles from "./Header.module.css";
 
-const disabledNavItems = ["Quiénes somos", "Servicios", "Contacto"];
+const navigationItems = [
+  {
+    label: "Servicios",
+    href: "/servicios",
+  },
+  {
+    label: "Contacto",
+    href: "/contacto",
+  },
+];
 
 export default function Header() {
+  const pathname = usePathname();
+
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -17,50 +33,202 @@ export default function Header() {
 
     handleScroll();
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
-  const closeMenu = () => setOpen(false);
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    const handleResize = () => {
+      if (window.innerWidth > 900) {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+
+    if (open) {
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  const closeMenu = () => {
+    setOpen(false);
+  };
+
+  const handleHomeClick = () => {
+    closeMenu();
+
+    /*
+     * Se usa window.location.assign para recargar realmente
+     * la página Inicio y regresar al comienzo, como un refresh.
+     */
+    window.location.assign("/");
+  };
+
+  const handleAboutClick = (
+    event: MouseEvent<HTMLAnchorElement>
+  ) => {
+    closeMenu();
+
+    if (pathname === "/") {
+      event.preventDefault();
+
+      const section = document.getElementById("quienes-somos");
+
+      if (section) {
+        section.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+
+        window.history.replaceState(
+          null,
+          "",
+          "/#quienes-somos"
+        );
+      }
+
+      return;
+    }
+
+    /*
+     * Desde Servicios, Contacto o Trabaja con nosotros,
+     * primero vuelve a Inicio y después llega a la sección.
+     */
+    window.location.assign("/#quienes-somos");
+  };
+
+  const isActive = (href: string) => pathname === href;
 
   return (
-    <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
+    <header
+      className={`${styles.header} ${
+        scrolled ? styles.scrolled : ""
+      }`}
+    >
       <div className={styles.inner}>
-        <Link
+        <a
           href="/"
           className={styles.logo}
-          aria-label="Ir al inicio - Transportes Iquique SpA"
+          aria-label="Recargar Inicio - Transportes Iquique SpA"
+          onClick={(event) => {
+            event.preventDefault();
+            handleHomeClick();
+          }}
         >
           <img
             src="/transportes-iquique-logo-menu-retina.webp"
             alt="Transportes Iquique SpA"
           />
-        </Link>
+        </a>
 
-        <nav className={styles.nav} aria-label="Menú principal">
-          <Link href="/" className={styles.activeLink}>
+        <nav
+          className={styles.nav}
+          aria-label="Menú principal"
+        >
+          <a
+            href="/"
+            onClick={(event) => {
+              event.preventDefault();
+              handleHomeClick();
+            }}
+            className={`${styles.navLink} ${
+              pathname === "/" ? styles.currentLink : ""
+            }`}
+            aria-current={
+              pathname === "/" ? "page" : undefined
+            }
+          >
             Inicio
-          </Link>
+          </a>
 
-          {disabledNavItems.map((item) => (
-            <span key={item} className={styles.disabledLink} aria-disabled="true">
-              {item}
-            </span>
+          <a
+            href="/#quienes-somos"
+            onClick={handleAboutClick}
+            className={styles.navLink}
+          >
+            Quiénes somos
+          </a>
+
+          {navigationItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`${styles.navLink} ${
+                isActive(item.href)
+                  ? styles.currentLink
+                  : ""
+              }`}
+              aria-current={
+                isActive(item.href) ? "page" : undefined
+              }
+            >
+              {item.label}
+            </Link>
           ))}
         </nav>
 
         <div className={styles.actions}>
-          <span className={styles.workButtonDisabled} aria-disabled="true">
+          <Link
+            href="/trabaja-con-nosotros"
+            className={`${styles.workButton} ${
+              pathname === "/trabaja-con-nosotros"
+                ? styles.workButtonActive
+                : ""
+            }`}
+            aria-current={
+              pathname === "/trabaja-con-nosotros"
+                ? "page"
+                : undefined
+            }
+          >
             Trabaja con nosotros
-          </span>
+          </Link>
 
           <button
             type="button"
-            className={`${styles.menuButton} ${open ? styles.menuOpen : ""}`}
-            onClick={() => setOpen((current) => !current)}
-            aria-label="Abrir menú"
+            className={`${styles.menuButton} ${
+              open ? styles.menuOpen : ""
+            }`}
+            onClick={() => {
+              setOpen((current) => !current);
+            }}
+            aria-label={
+              open
+                ? "Cerrar menú principal"
+                : "Abrir menú principal"
+            }
             aria-expanded={open}
+            aria-controls="mobile-navigation"
           >
             <span />
             <span />
@@ -69,27 +237,110 @@ export default function Header() {
         </div>
       </div>
 
-      <div className={`${styles.mobilePanel} ${open ? styles.mobileOpen : ""}`}>
-        <nav className={styles.mobileNav} aria-label="Menú móvil">
-          <Link href="/" onClick={closeMenu} className={styles.mobileActive}>
-            Inicio
+      <div
+        id="mobile-navigation"
+        className={`${styles.mobilePanel} ${
+          open ? styles.mobileOpen : ""
+        }`}
+        aria-hidden={!open}
+      >
+        <nav
+          className={styles.mobileNav}
+          aria-label="Menú móvil"
+        >
+          <a
+            href="/"
+            onClick={(event) => {
+              event.preventDefault();
+              handleHomeClick();
+            }}
+            className={`${styles.mobileLink} ${
+              pathname === "/"
+                ? styles.mobileCurrent
+                : ""
+            }`}
+            aria-current={
+              pathname === "/" ? "page" : undefined
+            }
+          >
+            <span>Inicio</span>
+            <i aria-hidden="true">01</i>
+          </a>
+
+          <a
+            href="/#quienes-somos"
+            onClick={handleAboutClick}
+            className={styles.mobileLink}
+          >
+            <span>Quiénes somos</span>
+            <i aria-hidden="true">02</i>
+          </a>
+
+          <Link
+            href="/servicios"
+            onClick={closeMenu}
+            className={`${styles.mobileLink} ${
+              pathname === "/servicios"
+                ? styles.mobileCurrent
+                : ""
+            }`}
+            aria-current={
+              pathname === "/servicios"
+                ? "page"
+                : undefined
+            }
+          >
+            <span>Servicios</span>
+            <i aria-hidden="true">03</i>
           </Link>
 
-          {disabledNavItems.map((item) => (
-            <span
-              key={item}
-              className={styles.mobileDisabled}
-              aria-disabled="true"
-            >
-              {item}
-            </span>
-          ))}
+          <Link
+            href="/contacto"
+            onClick={closeMenu}
+            className={`${styles.mobileLink} ${
+              pathname === "/contacto"
+                ? styles.mobileCurrent
+                : ""
+            }`}
+            aria-current={
+              pathname === "/contacto"
+                ? "page"
+                : undefined
+            }
+          >
+            <span>Contacto</span>
+            <i aria-hidden="true">04</i>
+          </Link>
 
-          <span className={styles.mobileWorkDisabled} aria-disabled="true">
-            Trabaja con nosotros
-          </span>
+          <Link
+            href="/trabaja-con-nosotros"
+            onClick={closeMenu}
+            className={`${styles.mobileWork} ${
+              pathname === "/trabaja-con-nosotros"
+                ? styles.mobileWorkActive
+                : ""
+            }`}
+            aria-current={
+              pathname === "/trabaja-con-nosotros"
+                ? "page"
+                : undefined
+            }
+          >
+            <span>Trabaja con nosotros</span>
+            <i aria-hidden="true">Postular</i>
+          </Link>
         </nav>
       </div>
+
+      {open && (
+        <button
+          type="button"
+          className={styles.mobileBackdrop}
+          onClick={closeMenu}
+          aria-label="Cerrar menú"
+          tabIndex={-1}
+        />
+      )}
     </header>
   );
 }

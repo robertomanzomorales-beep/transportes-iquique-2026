@@ -1,0 +1,272 @@
+.section {
+  position: relative;
+  padding: 115px 24px;
+  overflow: hidden;
+  background: #f1f3f8;
+  border-top: 1px solid rgba(16, 18, 92, 0.12);
+  border-bottom: 1px solid rgba(16, 18, 92, 0.12);
+}
+
+.inner {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+  align-items: center;
+  gap: 76px;
+}
+
+/* VIDEO */
+
+.media {
+  opacity: 0;
+  transform: translateY(135px);
+
+  transition:
+    opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.visible .media {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  background: #11132d;
+  border-top: 4px solid #fdbb13;
+
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.55s ease;
+}
+
+.media:hover .video {
+  transform: translateY(-7px) scale(1.01);
+  filter: contrast(1.03);
+}
+
+.mediaLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding-top: 16px;
+  border-top: 1px solid rgba(16, 18, 92, 0.14);
+
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-size: 0.56rem;
+  font-weight: 750;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  color: #616779;
+}
+
+.mediaLabel span:last-child {
+  color: #171977;
+}
+
+/* TEXTO */
+
+.content {
+  opacity: 0;
+  transform: translateY(155px);
+
+  transition:
+    opacity 1s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.08s;
+}
+
+.visible .content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 18px;
+
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+
+  color: #171977;
+}
+
+.title {
+  max-width: 520px;
+  margin: 0;
+
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-size: clamp(2.3rem, 4vw, 4rem);
+  font-weight: 800;
+  line-height: 0.99;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+
+  color: #10125c;
+}
+
+.description {
+  max-width: 520px;
+  margin: 26px 0 0;
+
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-size: 0.96rem;
+  font-weight: 400;
+  line-height: 1.78;
+
+  color: #555b6d;
+}
+
+.points {
+  display: flex;
+  flex-direction: column;
+  margin-top: 34px;
+  border-top: 1px solid rgba(16, 18, 92, 0.15);
+}
+
+.points span {
+  position: relative;
+
+  padding: 14px 0 14px 20px;
+  border-bottom: 1px solid rgba(16, 18, 92, 0.13);
+
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-size: 0.67rem;
+  font-weight: 750;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+
+  color: #20234f;
+
+  transition:
+    padding-left 0.3s ease,
+    color 0.3s ease;
+}
+
+.points span::before {
+  content: "";
+
+  position: absolute;
+  top: 50%;
+  left: 0;
+
+  width: 8px;
+  height: 2px;
+
+  background: #fdbb13;
+  transform: translateY(-50%);
+  transition: width 0.3s ease;
+}
+
+.points span:hover {
+  padding-left: 30px;
+  color: #10125c;
+}
+
+.points span:hover::before {
+  width: 18px;
+}
+
+/* TABLET */
+
+@media (max-width: 1000px) {
+  .section {
+    padding: 95px 24px;
+  }
+
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 52px;
+  }
+
+  .title,
+  .description {
+    max-width: 680px;
+  }
+}
+
+/* MÓVIL */
+
+@media (max-width: 620px) {
+  .section {
+    padding: 74px 16px 84px;
+  }
+
+  .inner {
+    gap: 40px;
+  }
+
+  .media {
+    transform: translateY(95px);
+  }
+
+  .content {
+    transform: translateY(105px);
+  }
+
+  .visible .media,
+  .visible .content {
+    transform: translateY(0);
+  }
+
+  .eyebrow {
+    margin-bottom: 15px;
+    font-size: 0.58rem;
+  }
+
+  .title {
+    font-size: clamp(2.05rem, 10vw, 2.9rem);
+    line-height: 1;
+  }
+
+  .description {
+    margin-top: 20px;
+    font-size: 0.89rem;
+    line-height: 1.68;
+  }
+
+  .points {
+    margin-top: 28px;
+  }
+
+  .points span {
+    padding-top: 13px;
+    padding-bottom: 13px;
+    font-size: 0.61rem;
+  }
+
+  .mediaLabel {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding-top: 13px;
+    font-size: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media,
+  .content {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .video {
+    transition: none;
+  }
+}

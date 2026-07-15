@@ -34,16 +34,6 @@ export default function Hero() {
               maquinarias, materiales para obras civiles, insumos mineros y
               operaciones especiales.
             </p>
-
-            <div className={styles.actions}>
-              <span className={styles.primary} aria-disabled="true">
-                Solicitar cotización
-              </span>
-
-              <span className={styles.secondary} aria-disabled="true">
-                Ver servicios
-              </span>
-            </div>
           </div>
 
           <div className={styles.bottomBar}>
