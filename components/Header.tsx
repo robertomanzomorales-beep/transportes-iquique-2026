@@ -2,11 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  useEffect,
-  useState,
-  type MouseEvent,
-} from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import styles from "./Header.module.css";
 
 const navigationItems = [
@@ -86,11 +82,6 @@ export default function Header() {
 
   const handleHomeClick = () => {
     closeMenu();
-
-    /*
-     * Se usa window.location.assign para recargar realmente
-     * la página Inicio y regresar al comienzo, como un refresh.
-     */
     window.location.assign("/");
   };
 
@@ -120,10 +111,6 @@ export default function Header() {
       return;
     }
 
-    /*
-     * Desde Servicios, Contacto o Trabaja con nosotros,
-     * primero vuelve a Inicio y después llega a la sección.
-     */
     window.location.assign("/#quienes-somos");
   };
 
@@ -139,7 +126,7 @@ export default function Header() {
         <a
           href="/"
           className={styles.logo}
-          aria-label="Recargar Inicio - Transportes Iquique SpA"
+          aria-label="Recargar inicio - Transportes Iquique SpA"
           onClick={(event) => {
             event.preventDefault();
             handleHomeClick();
@@ -151,10 +138,7 @@ export default function Header() {
           />
         </a>
 
-        <nav
-          className={styles.nav}
-          aria-label="Menú principal"
-        >
+        <nav className={styles.nav} aria-label="Menú principal">
           <a
             href="/"
             onClick={(event) => {
@@ -164,9 +148,7 @@ export default function Header() {
             className={`${styles.navLink} ${
               pathname === "/" ? styles.currentLink : ""
             }`}
-            aria-current={
-              pathname === "/" ? "page" : undefined
-            }
+            aria-current={pathname === "/" ? "page" : undefined}
           >
             Inicio
           </a>
@@ -183,10 +165,9 @@ export default function Header() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={closeMenu}
               className={`${styles.navLink} ${
-                isActive(item.href)
-                  ? styles.currentLink
-                  : ""
+                isActive(item.href) ? styles.currentLink : ""
               }`}
               aria-current={
                 isActive(item.href) ? "page" : undefined
@@ -200,6 +181,7 @@ export default function Header() {
         <div className={styles.actions}>
           <Link
             href="/trabaja-con-nosotros"
+            onClick={closeMenu}
             className={`${styles.workButton} ${
               pathname === "/trabaja-con-nosotros"
                 ? styles.workButtonActive
@@ -219,9 +201,7 @@ export default function Header() {
             className={`${styles.menuButton} ${
               open ? styles.menuOpen : ""
             }`}
-            onClick={() => {
-              setOpen((current) => !current);
-            }}
+            onClick={() => setOpen((current) => !current)}
             aria-label={
               open
                 ? "Cerrar menú principal"
@@ -242,12 +222,8 @@ export default function Header() {
         className={`${styles.mobilePanel} ${
           open ? styles.mobileOpen : ""
         }`}
-        aria-hidden={!open}
       >
-        <nav
-          className={styles.mobileNav}
-          aria-label="Menú móvil"
-        >
+        <nav className={styles.mobileNav} aria-label="Menú móvil">
           <a
             href="/"
             onClick={(event) => {
@@ -255,13 +231,9 @@ export default function Header() {
               handleHomeClick();
             }}
             className={`${styles.mobileLink} ${
-              pathname === "/"
-                ? styles.mobileCurrent
-                : ""
+              pathname === "/" ? styles.mobileCurrent : ""
             }`}
-            aria-current={
-              pathname === "/" ? "page" : undefined
-            }
+            aria-current={pathname === "/" ? "page" : undefined}
           >
             <span>Inicio</span>
             <i aria-hidden="true">01</i>
@@ -285,9 +257,7 @@ export default function Header() {
                 : ""
             }`}
             aria-current={
-              pathname === "/servicios"
-                ? "page"
-                : undefined
+              pathname === "/servicios" ? "page" : undefined
             }
           >
             <span>Servicios</span>
@@ -303,9 +273,7 @@ export default function Header() {
                 : ""
             }`}
             aria-current={
-              pathname === "/contacto"
-                ? "page"
-                : undefined
+              pathname === "/contacto" ? "page" : undefined
             }
           >
             <span>Contacto</span>
@@ -331,16 +299,6 @@ export default function Header() {
           </Link>
         </nav>
       </div>
-
-      {open && (
-        <button
-          type="button"
-          className={styles.mobileBackdrop}
-          onClick={closeMenu}
-          aria-label="Cerrar menú"
-          tabIndex={-1}
-        />
-      )}
     </header>
   );
 }
