@@ -1,23 +1,26 @@
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import QuienesSomos from "@/components/QuienesSomos";
-import ServiciosHome from "@/components/ServiciosHome";
-import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
-
 export default function Home() {
   return (
-    <>
-      <Header />
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "grid",
+        placeItems: "center",
+        padding: "24px",
+        background: "#07064a",
+        color: "#ffffff",
+        textAlign: "center",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      <section>
+        <h1 style={{ marginBottom: "16px", fontSize: "clamp(30px, 5vw, 52px)" }}>
+          Sitio temporalmente no disponible
+        </h1>
 
-      <main>
-        <Hero />
-        <QuienesSomos />
-        <ServiciosHome />
-        <Footer />
-      </main>
-
-      <WhatsAppButton />
-    </>
+        <p style={{ margin: 0, fontSize: "18px", opacity: 0.85 }}>
+          Estamos realizando labores administrativas.
+        </p>
+      </section>
+    </main>
   );
 }
